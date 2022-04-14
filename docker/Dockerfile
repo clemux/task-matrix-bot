@@ -58,7 +58,7 @@ RUN apk add --no-cache \
 # Install python runtime modules. We do this before copying the source code
 # such that these dependencies can be cached
 # This speeds up subsequent image builds when the source code is changed
-RUN mkdir -p /src/my_project_name
+RUN mkdir -p /src/taskbot
 COPY my_project_name/__init__.py /src/my_project_name/
 COPY README.md my-project-name /src/
 

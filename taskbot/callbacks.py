@@ -11,11 +11,11 @@ from nio import (
     UnknownEvent,
 )
 
-from my_project_name.bot_commands import Command
-from my_project_name.chat_functions import make_pill, react_to_event, send_text_to_room
-from my_project_name.config import Config
-from my_project_name.message_responses import Message
-from my_project_name.storage import Storage
+from taskbot.bot_commands import Command
+from taskbot.chat_functions import make_pill, react_to_event, send_text_to_room
+from taskbot.config import Config
+from taskbot.message_responses import Message
+from taskbot.storage import Storage
 
 logger = logging.getLogger(__name__)
 

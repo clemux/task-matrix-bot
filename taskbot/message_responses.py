@@ -2,9 +2,9 @@ import logging
 
 from nio import AsyncClient, MatrixRoom, RoomMessageText
 
-from my_project_name.chat_functions import send_text_to_room
-from my_project_name.config import Config
-from my_project_name.storage import Storage
+from taskbot.chat_functions import send_text_to_room
+from taskbot.config import Config
+from taskbot.storage import Storage
 
 logger = logging.getLogger(__name__)
 
