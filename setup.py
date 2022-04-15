@@ -34,6 +34,7 @@ setup(
         "matrix-nio[e2e]>=0.10.0",
         "Markdown>=3.1.1",
         "PyYAML>=5.1.2",
+        "taskw"
     ],
     extras_require={
         "postgres": ["psycopg2>=2.8.5"],

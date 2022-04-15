@@ -11,7 +11,7 @@ from nio import (
     UnknownEvent,
 )
 
-from taskbot.bot_commands import Command
+from taskbot.commands import task_commands
 from taskbot.chat_functions import make_pill, react_to_event, send_text_to_room
 from taskbot.config import Config
 from taskbot.message_responses import Message
@@ -74,8 +74,16 @@ class Callbacks:
             # Remove the command prefix
             msg = msg[len(self.command_prefix) :]
 
-        command = Command(self.client, self.store, self.config, msg, room, event)
-        await command.process()
+        cmd, _, args = msg.partition(' ')
+        if not cmd in task_commands:
+            response = f"Unknown command '{cmd}'"
+        else:
+            func, nb_args = task_commands.get(cmd)
+            if nb_args > 0:
+                response = func(args)
+            else:
+                response = func()
+        await send_text_to_room(self.client, room.room_id, message=response)
 
     async def invite(self, room: MatrixRoom, event: InviteMemberEvent) -> None:
         """Callback for when an invite is received. Join the room specified in the invite.
