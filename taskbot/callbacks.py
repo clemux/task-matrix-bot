@@ -75,6 +75,7 @@ class Callbacks:
             msg = msg[len(self.command_prefix) :]
 
         cmd, _, args = msg.partition(' ')
+        cmd = cmd.lower()
         if not cmd in task_commands:
             response = f"Unknown command '{cmd}'"
         else:
