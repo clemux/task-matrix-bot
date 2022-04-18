@@ -18,6 +18,7 @@ from nio import (
 
 from taskbot.callbacks import Callbacks
 from taskbot.config import Config
+from taskbot.errors import ConfigError
 from taskbot.storage import Storage
 
 logger = logging.getLogger(__name__)
@@ -34,7 +35,11 @@ async def run_bot():
         config_path = "config.yaml"
 
     # Read the parsed config file and create a Config object
-    config = Config(config_path)
+    try:
+        config = Config(config_path)
+    except ConfigError:
+        logger.error(f"Could not load configuration file '{config_path}'")
+        sys.exit(1)
 
     # Configure the database
     store = Storage(config.database)
