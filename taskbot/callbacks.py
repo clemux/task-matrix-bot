@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from nio import (
     AsyncClient,
@@ -186,15 +187,7 @@ class Callbacks:
             f"commands a second time)."
         )
 
-        red_x_and_lock_emoji = "❌ 🔐"
-
-        # React to the undecryptable event with some emoji
-        await react_to_event(
-            self.client,
-            room.room_id,
-            event.event_id,
-            red_x_and_lock_emoji,
-        )
+        sys.exit(1)
 
     async def unknown(self, room: MatrixRoom, event: UnknownEvent) -> None:
         """Callback for when an event with a type that is unknown to matrix-nio is received.
