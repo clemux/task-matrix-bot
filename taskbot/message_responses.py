@@ -4,7 +4,6 @@ from nio import AsyncClient, MatrixRoom, RoomMessageText
 
 from taskbot.chat_functions import send_text_to_room
 from taskbot.config import Config
-from taskbot.storage import Storage
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +12,6 @@ class Message:
     def __init__(
         self,
         client: AsyncClient,
-        store: Storage,
         config: Config,
         message_content: str,
         room: MatrixRoom,
@@ -24,8 +22,6 @@ class Message:
         Args:
             client: nio client used to interact with matrix.
 
-            store: Bot storage.
-
             config: Bot configuration parameters.
 
             message_content: The body of the message.
@@ -35,7 +31,6 @@ class Message:
             event: The event defining the message.
         """
         self.client = client
-        self.store = store
         self.config = config
         self.message_content = message_content
         self.room = room

@@ -15,23 +15,19 @@ from taskbot.chat_functions import send_text_to_room
 from taskbot.commands import task_commands
 from taskbot.config import Config
 from taskbot.message_responses import Message
-from taskbot.storage import Storage
 
 logger = logging.getLogger(__name__)
 
 
 class Callbacks:
-    def __init__(self, client: AsyncClient, store: Storage, config: Config):
+    def __init__(self, client: AsyncClient, config: Config):
         """
         Args:
             client: nio client used to interact with matrix.
 
-            store: Bot storage.
-
             config: Bot configuration parameters.
         """
         self.client = client
-        self.store = store
         self.config = config
 
     async def message(self, room: MatrixRoom, event: RoomMessageText) -> None:
@@ -61,7 +57,7 @@ class Callbacks:
         # room.member_count <= 2 ... we assume a DM
         if room.member_count > 2:
             # General message listener
-            message = Message(self.client, self.store, self.config, msg, room, event)
+            message = Message(self.client, self.config, msg, room, event)
             await message.process()
             return
 

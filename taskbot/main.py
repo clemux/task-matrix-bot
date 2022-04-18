@@ -19,7 +19,6 @@ from nio import (
 from taskbot.callbacks import Callbacks
 from taskbot.config import Config
 from taskbot.errors import ConfigError
-from taskbot.storage import Storage
 
 logger = logging.getLogger(__name__)
 
@@ -37,8 +36,6 @@ async def run_bot(args):
         logger.error(f"Could not load configuration file '{config_path}'")
         sys.exit(1)
 
-    # Configure the database
-    store = Storage(config.database)
 
     # Configuration options for the AsyncClient
     client_config = AsyncClientConfig(
@@ -62,7 +59,7 @@ async def run_bot(args):
         client.user_id = config.user_id
 
     # Set up event callbacks
-    callbacks = Callbacks(client, store, config)
+    callbacks = Callbacks(client, config)
 
     client.add_event_callback(callbacks.decryption_failure, (MegolmEvent,))
 

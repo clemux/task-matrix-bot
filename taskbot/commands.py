@@ -5,7 +5,6 @@ from taskw import TaskWarrior
 
 from taskbot.chat_functions import react_to_event, send_text_to_room
 from taskbot.config import Config
-from taskbot.storage import Storage
 
 
 class TaskWrapper:
