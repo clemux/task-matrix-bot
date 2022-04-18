@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
+import argparse
 import asyncio
 import logging
 import sys
-from time import sleep
 
 from aiohttp import ClientConnectionError, ServerDisconnectedError
 from nio import (
@@ -24,16 +24,12 @@ from taskbot.storage import Storage
 logger = logging.getLogger(__name__)
 
 
-async def run_bot():
+async def run_bot(args):
     """The first function that is run when starting the bot"""
 
     # Read user-configured options from a config file.
     # A different config file path can be specified as the first command line argument
-    if len(sys.argv) > 1:
-        config_path = sys.argv[1]
-    else:
-        config_path = "config.yaml"
-
+    config_path = args.config_path
     # Read the parsed config file and create a Config object
     try:
         config = Config(config_path)
@@ -121,11 +117,23 @@ async def run_bot():
 
 
 def main():
-    loop = asyncio.get_event_loop()
-    try:
-        loop.run_until_complete(run_bot())
-    except KeyboardInterrupt:
-        logger.info('Exiting...')
+    parser = argparse.ArgumentParser()
+    sub_parsers = parser.add_subparsers(required=True)
+
+    # run bot
+    run_parser = sub_parsers.add_parser('run')
+    run_parser.add_argument('config_path')
+    run_parser.set_defaults(cmd='run')
+
+    args = parser.parse_args()
+
+    if args.cmd == 'run':
+        loop = asyncio.get_event_loop()
+        try:
+            loop.run_until_complete(run_bot(args))
+        except KeyboardInterrupt:
+            logger.info('Exiting...')
+
 
 if __name__ == '__main__':
     main()
