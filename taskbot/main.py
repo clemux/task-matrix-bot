@@ -67,59 +67,57 @@ async def run_bot():
 
     # Set up event callbacks
     callbacks = Callbacks(client, store, config)
-    client.add_event_callback(callbacks.message, (RoomMessageText,))
-    client.add_event_callback(
-        callbacks.invite_event_filtered_callback, (InviteMemberEvent,)
-    )
+
     client.add_event_callback(callbacks.decryption_failure, (MegolmEvent,))
-    client.add_event_callback(callbacks.unknown, (UnknownEvent,))
 
-    # Keep trying to reconnect on failure (with some time in-between)
-    while True:
-        try:
-            if config.user_token:
-                # Use token to log in
-                client.load_store()
+    try:
+        if config.user_token:
+            # Use token to log in
+            client.load_store()
 
-                # Sync encryption keys with the server
-                if client.should_upload_keys:
-                    await client.keys_upload()
-            else:
-                # Try to login with the configured username/password
-                try:
-                    login_response = await client.login(
-                        password=config.user_password,
-                        device_name=config.device_name,
-                    )
+            # Sync encryption keys with the server
+            if client.should_upload_keys:
+                await client.keys_upload()
+        else:
+            # Try to login with the configured username/password
+            try:
+                login_response = await client.login(
+                    password=config.user_password,
+                    device_name=config.device_name,
+                )
 
-                    # Check if login failed
-                    if type(login_response) == LoginError:
-                        logger.error("Failed to login: %s", login_response.message)
-                        return False
-                except LocalProtocolError as e:
-                    # There's an edge case here where the user hasn't installed the correct C
-                    # dependencies. In that case, a LocalProtocolError is raised on login.
-                    logger.fatal(
-                        "Failed to login. Have you installed the correct dependencies? "
-                        "https://github.com/poljar/matrix-nio#installation "
-                        "Error: %s",
-                        e,
-                    )
+                # Check if login failed
+                if type(login_response) == LoginError:
+                    logger.error("Failed to login: %s", login_response.message)
                     return False
+            except LocalProtocolError as e:
+                # There's an edge case here where the user hasn't installed the correct C
+                # dependencies. In that case, a LocalProtocolError is raised on login.
+                logger.fatal(
+                    "Failed to login. Have you installed the correct dependencies? "
+                    "https://github.com/poljar/matrix-nio#installation "
+                    "Error: %s",
+                    e,
+                )
+                return False
 
-                # Login succeeded!
+            # Login succeeded!
 
-            logger.info(f"Logged in as {config.user_id}")
-            await client.sync_forever(timeout=30000, full_state=True)
+        logger.info(f"Logged in as {config.user_id}")
+        await client.sync()
+        client.add_event_callback(callbacks.unknown, (UnknownEvent,))
+        client.add_event_callback(callbacks.message, (RoomMessageText,))
+        client.add_event_callback(
+            callbacks.invite_event_filtered_callback, (InviteMemberEvent,)
+        )
+        await client.sync_forever(timeout=30000, full_state=True)
 
-        except (ClientConnectionError, ServerDisconnectedError):
-            logger.warning("Unable to connect to homeserver, retrying in 15s...")
+    except (ClientConnectionError, ServerDisconnectedError):
+        logger.error("Unable to connect to homeserver.")
 
-            # Sleep so we don't bombard the server with login requests
-            sleep(15)
-        finally:
-            # Make sure to close the client connection on disconnect
-            await client.close()
+    finally:
+        # Make sure to close the client connection on disconnect
+        await client.close()
 
 
 def main():
