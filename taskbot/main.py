@@ -61,7 +61,6 @@ async def run_bot(args):
     # Set up event callbacks
     callbacks = Callbacks(client, config)
 
-    client.add_event_callback(callbacks.decryption_failure, (MegolmEvent,))
 
     try:
         if config.user_token:
@@ -97,7 +96,10 @@ async def run_bot(args):
             # Login succeeded!
 
         logger.info(f"Logged in as {config.user_id}")
+
         await client.sync()
+
+        client.add_event_callback(callbacks.decryption_failure, (MegolmEvent,))
         client.add_event_callback(callbacks.unknown, (UnknownEvent,))
         client.add_event_callback(callbacks.message, (RoomMessageText,))
         client.add_event_callback(
