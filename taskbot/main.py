@@ -23,7 +23,7 @@ from taskbot.storage import Storage
 logger = logging.getLogger(__name__)
 
 
-async def main():
+async def run_bot():
     """The first function that is run when starting the bot"""
 
     # Read user-configured options from a config file.
@@ -117,5 +117,8 @@ async def main():
             await client.close()
 
 
-# Run the main function in an asyncio event loop
-asyncio.get_event_loop().run_until_complete(main())
+def main():
+    asyncio.get_event_loop().run_until_complete(run_bot())
+
+if __name__ == '__main__':
+    main()
