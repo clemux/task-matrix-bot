@@ -118,7 +118,11 @@ async def run_bot():
 
 
 def main():
-    asyncio.get_event_loop().run_until_complete(run_bot())
+    loop = asyncio.get_event_loop()
+    try:
+        loop.run_until_complete(run_bot())
+    except KeyboardInterrupt:
+        logger.info('Exiting...')
 
 if __name__ == '__main__':
     main()
