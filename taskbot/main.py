@@ -32,8 +32,8 @@ async def run_bot(args):
     # Read the parsed config file and create a Config object
     try:
         config = Config(config_path)
-    except ConfigError:
-        logger.error(f"Could not load configuration file '{config_path}'")
+    except ConfigError as e:
+        logger.error(f"Could not load config: {e}")
         sys.exit(1)
 
 
