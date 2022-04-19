@@ -38,8 +38,8 @@ class ListCommand(BaseCommand):
 class AddCommand(BaseCommand):
     async def process(self, args: str):
         description = args
-        self.w.task_add(description=description)
-        return f"Task added."
+        task = self.w.task_add(description=description)
+        return f"Task {task['id']} added."
 
 
 class DoneCommand(BaseCommand):
