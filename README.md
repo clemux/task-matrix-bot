@@ -4,7 +4,7 @@ Proof of concept of a Matrix interface for taskwarrior.
 
 Initial codebase derived from https://github.com/anoadragon453/nio-template (Apache 2.0 License)
 
-## Setup
+## Setup (without docker)
 
 ### Dependencies
 
@@ -30,9 +30,25 @@ pip install .
 
 Edit the `matrix` section.
 
-## Running
+### Running
 
 `taskbot [config file path]`
+
+## Setup using docker
+
+### Build container image
+
+`docker build -t taskbot:latest -f container/Dockerfile .`
+
+### Running
+
+ - Create a directory where the bot will
+   - create and access the matrix-nio store for e2e keys
+   - access the configuration file
+ - In that directory, create a config file, using `sample.config.yaml` as a template (modify the `matrix` section)
+ - Change `-u 1000` to use the UID you want the bot to run as (must have read/write access to the data directory)
+
+`docker run -u 1000 -ti --rm -v ~/taskbot:/data localhost/taskbot run /data/config.container.yaml`
 
 ## Usage
 
