@@ -23,6 +23,21 @@ class BaseCommand:
         date = datetime.strptime(date_string, '%Y%m%dT%H%M%SZ')
         return date
 
+    @staticmethod
+    def _format_date(date: datetime):
+        delta = datetime.utcnow() - date
+        days = delta.days
+        hours, remainder = divmod(delta.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        days_string = f"{f'{days}d' if days else ''}"
+        hours_string = f"{f'{hours}h' if hours and not days else ''}"
+        minutes_string = f"{f'{minutes}m' if minutes and not (hours or days) else ''}"
+        seconds_string = f"{f'{seconds}s' if not minutes else ''}"
+
+        formatted = f"{days_string} {hours_string} {minutes_string} {seconds_string}".strip()
+        return formatted
+
 
 class ListCommand(BaseCommand):
     async def process(self, args: str):
@@ -31,7 +46,8 @@ class ListCommand(BaseCommand):
         response = [f"**Current tasks**:"]
         for task in task_list['pending']:
             date = datetime.strptime(task['entry'], '%Y%m%dT%H%M%SZ')
-            response.append(f"**{task['id']}** {date}: {task['description']}")
+            formatted_date = self._format_date(date)
+            response.append(f"**{task['id']}** - **{formatted_date}** - {task['description']}")
         return '\n\n'.join(response)
 
 
