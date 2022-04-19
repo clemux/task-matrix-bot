@@ -32,7 +32,7 @@ Edit the `matrix` section.
 
 ### Running
 
-`taskbot [config file path]`
+`taskbot run [config file path]`
 
 ## Setup using docker
 
