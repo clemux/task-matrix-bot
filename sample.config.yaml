@@ -14,26 +14,15 @@ matrix:
   homeserver_url: https://matrix.org
   # The device ID that is **non pre-existing** device
   # You can choose any string as this value
-  device_id: DEADC0FF33
+  device_id:
   # What to name the logged in device
-  device_name: taskbotmux
-
-storage:
-  # The database connection string
-  # For SQLite3, this would look like:
-  #     database: "sqlite://bot.db"
-  # For Postgres, this would look like:
-  #     database: "postgres://username:password@localhost/dbname?sslmode=disable"
-  database: "sqlite://bot.db"
-  # The path to a directory for internal bot storage
-  # containing encryption keys, sync tokens, etc.
-  store_path: "./store"
+  device_name:
 
 # Logging setup
 logging:
   # Logging level
   # Allowed levels are 'INFO', 'WARNING', 'ERROR', 'DEBUG' where DEBUG is most verbose
-  level: DEBUG
+  level: INFO
   # Configure logging to a file
   file_logging:
     # Whether logging to a file is enabled
