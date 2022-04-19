@@ -8,7 +8,6 @@ from aiohttp import ClientConnectionError, ServerDisconnectedError
 from nio import (
     AsyncClient,
     AsyncClientConfig,
-    InviteMemberEvent,
     LocalProtocolError,
     LoginError,
     MegolmEvent,
@@ -102,9 +101,6 @@ async def run_bot(args):
         client.add_event_callback(callbacks.decryption_failure, (MegolmEvent,))
         client.add_event_callback(callbacks.unknown, (UnknownEvent,))
         client.add_event_callback(callbacks.message, (RoomMessageText,))
-        client.add_event_callback(
-            callbacks.invite_event_filtered_callback, (InviteMemberEvent,)
-        )
         await client.sync_forever(timeout=30000, full_state=True)
 
     except (ClientConnectionError, ServerDisconnectedError):

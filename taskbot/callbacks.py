@@ -3,8 +3,6 @@ import sys
 
 from nio import (
     AsyncClient,
-    InviteMemberEvent,
-    JoinError,
     MatrixRoom,
     MegolmEvent,
     RoomMessageText,
@@ -50,7 +48,6 @@ class Callbacks:
             f"{room.user_name(event.sender)}: {msg}"
         )
 
-
         # room.is_group is often a DM, but not always.
         # room.is_group does not allow room aliases
         # room.member_count > 2 ... we assume a public room
@@ -72,47 +69,6 @@ class Callbacks:
             cmd = task_commands.get(cmd)()
             response = cmd.process(args)
         await send_text_to_room(self.client, room.room_id, message=response)
-
-    async def invite(self, room: MatrixRoom, event: InviteMemberEvent) -> None:
-        """Callback for when an invite is received. Join the room specified in the invite.
-
-        Args:
-            room: The room that we are invited to.
-
-            event: The invite event.
-        """
-        logger.debug(f"Got invite to {room.room_id} from {event.sender}.")
-
-        # Attempt to join 3 times before giving up
-        for attempt in range(3):
-            result = await self.client.join(room.room_id)
-            if type(result) == JoinError:
-                logger.error(
-                    f"Error joining room {room.room_id} (attempt %d): %s",
-                    attempt,
-                    result.message,
-                )
-            else:
-                break
-        else:
-            logger.error("Unable to join room: %s", room.room_id)
-
-        # Successfully joined room
-        logger.info(f"Joined {room.room_id}")
-
-    async def invite_event_filtered_callback(
-        self, room: MatrixRoom, event: InviteMemberEvent
-    ) -> None:
-        """
-        Since the InviteMemberEvent is fired for every m.room.member state received
-        in a sync response's `rooms.invite` section, we will receive some that are
-        not actually our own invite event (such as the inviter's membership).
-        This makes sure we only call `callbacks.invite` with our own invite events.
-        """
-        if event.state_key == self.client.user_id:
-            # This is our own membership (invite) event
-            await self.invite(room, event)
-
 
     async def decryption_failure(self, room: MatrixRoom, event: MegolmEvent) -> None:
         """Callback for when an event fails to decrypt. Inform the user.
