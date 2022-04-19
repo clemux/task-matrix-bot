@@ -11,7 +11,7 @@ class TaskWrapper:
     def __init__(self):
         self.w = TaskWarrior()
 
-    def list(self):
+    def list(self, args):
         task_list = self.w.load_tasks()
 
         response = [f"**Current tasks**:"]
@@ -26,14 +26,24 @@ class TaskWrapper:
         return f"Task added."
 
     def done(self, args):
+        id = int(args)
+        tasks = self.w.load_tasks()['pending']
+        ids = [t['id'] for t in tasks]
+        if id in ids:
+            self.w.task_done(id=id)
+            return f"Task {id} done."
+        else:
+            return f"No pending task matching ID {id}."
+
+    def delete(self, args):
         id = args
-        self.w.task_done(id=id)
-        return f"Task {id} done."
+        self.w.task_delete(id=id)
+        return f"Task {id} deleted."
 
 wrapper = TaskWrapper()
 
 task_commands = {
-    'list': (wrapper.list, 0),
-    'add': (wrapper.add, 1),
-    'done': (wrapper.done, 1)
+    'list': wrapper.list,
+    'add': wrapper.add,
+    'done': wrapper.done,
 }
