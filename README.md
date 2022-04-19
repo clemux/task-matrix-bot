@@ -4,6 +4,10 @@ Proof of concept of a Matrix interface for taskwarrior.
 
 Initial codebase derived from https://github.com/anoadragon453/nio-template (Apache 2.0 License)
 
+Matrix connection uses [matrix-nio](https://github.com/poljar/matrix-nio).
+
+Interacting with takswarrior is done through [taskw](https://github.com/ralphbean/taskw).
+
 ## Setup (without docker)
 
 ### Dependencies
