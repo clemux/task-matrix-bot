@@ -69,8 +69,8 @@ class Callbacks:
         if not cmd in task_commands:
             response = f"Unknown command '{cmd}'"
         else:
-            func = task_commands.get(cmd)
-            response = func(args)
+            cmd = task_commands.get(cmd)()
+            response = cmd.process(args)
         await send_text_to_room(self.client, room.room_id, message=response)
 
     async def invite(self, room: MatrixRoom, event: InviteMemberEvent) -> None:
