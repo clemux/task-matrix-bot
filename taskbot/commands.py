@@ -10,7 +10,7 @@ class BaseCommand:
     def __init__(self):
         self.w = TaskWarrior()
 
-    def process(self, args):
+    async def process(self, args):
         raise NotImplementedError
 
     def _task_id_exists(self, id: int):
@@ -25,7 +25,7 @@ class BaseCommand:
 
 
 class ListCommand(BaseCommand):
-    def process(self, args):
+    async def process(self, args):
         task_list = self.w.load_tasks()
 
         response = [f"**Current tasks**:"]
@@ -36,14 +36,14 @@ class ListCommand(BaseCommand):
 
 
 class AddCommand(BaseCommand):
-    def process(self, args):
+    async def process(self, args):
         description = args
         self.w.task_add(description=description)
         return f"Task added."
 
 
 class DoneCommand(BaseCommand):
-    def process(self, args: str):
+    async def process(self, args: str):
         id = int(args)
         if self._task_id_exists(id):
             self.w.task_done(id=id)
@@ -53,7 +53,7 @@ class DoneCommand(BaseCommand):
 
 
 class InfoCommand(BaseCommand):
-    def process(self, args: str):
+    async def process(self, args: str):
         id = int(args)
         if not self._task_id_exists(id):
             return f"No pending task matching ID {id}."

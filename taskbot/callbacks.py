@@ -67,7 +67,7 @@ class Callbacks:
             response = f"Unknown command '{cmd}'"
         else:
             cmd = task_commands.get(cmd)()
-            response = cmd.process(args)
+            response = await cmd.process(args)
         await send_text_to_room(self.client, room.room_id, message=response)
 
     async def decryption_failure(self, room: MatrixRoom, event: MegolmEvent) -> None:
