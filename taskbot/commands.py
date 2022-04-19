@@ -10,7 +10,7 @@ class BaseCommand:
     def __init__(self):
         self.w = TaskWarrior()
 
-    async def process(self, args):
+    async def process(self, args: str):
         raise NotImplementedError
 
     def _task_id_exists(self, id: int):
@@ -19,13 +19,13 @@ class BaseCommand:
         return id in ids
 
     @staticmethod
-    def _parse_date(date_string):
+    def _parse_date(date_string: str):
         date = datetime.strptime(date_string, '%Y%m%dT%H%M%SZ')
         return date
 
 
 class ListCommand(BaseCommand):
-    async def process(self, args):
+    async def process(self, args: str):
         task_list = self.w.load_tasks()
 
         response = [f"**Current tasks**:"]
@@ -36,7 +36,7 @@ class ListCommand(BaseCommand):
 
 
 class AddCommand(BaseCommand):
-    async def process(self, args):
+    async def process(self, args: str):
         description = args
         self.w.task_add(description=description)
         return f"Task added."
