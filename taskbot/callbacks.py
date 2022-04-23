@@ -12,7 +12,6 @@ from nio import (
 from taskbot.chat_functions import send_text_to_room
 from taskbot.commands import task_commands
 from taskbot.config import Config
-from taskbot.message_responses import Message
 
 logger = logging.getLogger(__name__)
 
@@ -48,18 +47,9 @@ class Callbacks:
             f"{room.user_name(event.sender)}: {msg}"
         )
 
-        # room.is_group is often a DM, but not always.
-        # room.is_group does not allow room aliases
-        # room.member_count > 2 ... we assume a public room
-        # room.member_count <= 2 ... we assume a DM
         if room.member_count > 2:
-            # General message listener
-            message = Message(self.client, self.config, msg, room, event)
-            await message.process()
+            # do nothing in group rooms
             return
-
-        # Otherwise if this is in a 1-1 with the bot,
-        # treat it as a command
 
         cmd, _, args = msg.partition(' ')
         cmd = cmd.lower()
