@@ -30,13 +30,14 @@ class BaseCommand:
         hours, remainder = divmod(delta.seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
 
-        days_string = f"{f'{days}d' if days else ''}"
-        hours_string = f"{f'{hours}h' if hours and not days else ''}"
-        minutes_string = f"{f'{minutes}m' if minutes and not (hours or days) else ''}"
-        seconds_string = f"{f'{seconds}s' if not minutes else ''}"
-
-        formatted = f"{days_string} {hours_string} {minutes_string} {seconds_string}".strip()
-        return formatted
+        if days:
+            return f'{days}d'
+        elif hours:
+            return f'{hours}h'
+        elif minutes:
+            return f"{minutes}m"
+        else:
+            return f'{seconds}s'
 
 
 class ListCommand(BaseCommand):
