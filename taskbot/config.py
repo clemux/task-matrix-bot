@@ -72,14 +72,12 @@ class Config:
 
 
         # Matrix bot account setup
-        self.user_id = self._get_cfg(["matrix", "user_id"], required=True)
-        if not re.match("@.*:.*", self.user_id):
+        self.user_id = self._get_cfg(["matrix", "user_id"], required=False)
+        if self.user_id is not None and not re.match("@.*:.*", self.user_id):
             raise ConfigError("matrix.user_id must be in the form @name:domain")
 
         self.user_password = self._get_cfg(["matrix", "user_password"], required=False)
         self.user_token = self._get_cfg(["matrix", "user_token"], required=False)
-        if not self.user_token and not self.user_password:
-            raise ConfigError("Must supply either user token or password")
 
         self.device_id = self._get_cfg(["matrix", "device_id"], required=True)
         self.device_name = self._get_cfg(

@@ -3,6 +3,7 @@ import argparse
 import asyncio
 import logging
 import sys
+from getpass import getpass
 
 from aiohttp import ClientConnectionError, ServerDisconnectedError
 from nio import (
@@ -35,6 +36,8 @@ async def run_bot(args):
         logger.error(f"Could not load config: {e}")
         sys.exit(1)
 
+    if not config.user_token and not config.user_password:
+        raise ConfigError("Must supply either user token or password.")
 
     # Configuration options for the AsyncClient
     client_config = AsyncClientConfig(
@@ -59,7 +62,6 @@ async def run_bot(args):
 
     # Set up event callbacks
     callbacks = Callbacks(client, config)
-
 
     try:
         if config.user_token:
@@ -111,6 +113,48 @@ async def run_bot(args):
         await client.close()
 
 
+async def login(args):
+    config_path = args.config_path
+    # Read the parsed config file and create a Config object
+    try:
+        config = Config(config_path)
+    except ConfigError as e:
+        logger.error(f"Could not load config: {e}")
+        sys.exit(1)
+
+    # Configuration options for the AsyncClient
+    client_config = AsyncClientConfig(
+        max_limit_exceeded=0,
+        max_timeouts=0,
+        store_sync_tokens=True,
+        encryption_enabled=True,
+    )
+
+    print(f'Logging in as user {config.user_id}')
+    user_password = config.user_password
+    if user_password is None:
+        print('No password set in configuration file.')
+        user_password = getpass()
+    else:
+        print("Using password set in configuration file.")
+    client = AsyncClient(
+        config.homeserver_url,
+        config.user_id,
+        device_id=config.device_id,
+        store_path=config.store_path,
+        config=client_config,
+    )
+    try:
+        login_response = await client.login(
+            password=user_password,
+            device_name=config.device_name,
+        )
+        print("Access token:", login_response.access_token)
+        print(f"You can now edit {config_path} and set 'matrix.user_token'")
+    finally:
+        await client.close()
+
+
 def main():
     parser = argparse.ArgumentParser()
     sub_parsers = parser.add_subparsers(required=True)
@@ -120,14 +164,20 @@ def main():
     run_parser.add_argument('config_path')
     run_parser.set_defaults(cmd='run')
 
+    # login
+    login_parser = sub_parsers.add_parser('login')
+    login_parser.add_argument('config_path')
+    login_parser.set_defaults(cmd='login')
     args = parser.parse_args()
 
+    loop = asyncio.get_event_loop()
     if args.cmd == 'run':
-        loop = asyncio.get_event_loop()
         try:
             loop.run_until_complete(run_bot(args))
         except KeyboardInterrupt:
             logger.info('Exiting...')
+    elif args.cmd == 'login':
+        loop.run_until_complete(login(args))
 
 
 if __name__ == '__main__':

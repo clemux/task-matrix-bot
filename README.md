@@ -32,7 +32,10 @@ pip install .
 
 `cp sample.config.yaml config.yaml`
 
-Edit the `matrix` section.
+Edit the `matrix` section. You must set `matrix.user_id` and either:
+
+ - set `matrix.password`
+ - run the `taskbot login [config file path]` to get an access token, and set it in `matrix.user_token`
 
 ### Running
 
