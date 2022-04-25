@@ -65,3 +65,9 @@ Commands implemented:
  - list: returns pending tasks
  - add <text>
  - done <id>
+
+# TODO
+
+ - handle due dates in task list
+ - do not return all tasks in list
+ - schedule reminders for due dates
