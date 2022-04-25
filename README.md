@@ -52,7 +52,6 @@ Edit the `matrix` section. You must set `matrix.user_id` and either:
  - Create a directory where the bot will
    - create and access the matrix-nio store for e2e keys
    - access the configuration file
- - In that directory, create a config file, using `sample.config.yaml` as a template (modify the `matrix` section)
  - Change `-u 1000` to use the UID you want the bot to run as (must have read/write access to the data directory)
 
 `docker run -u 1000 -ti --rm -v ~/taskbot:/data localhost/taskbot run /data/config.container.yaml`
