@@ -43,9 +43,11 @@ class BaseCommand:
 class ListCommand(BaseCommand):
     async def process(self, args: str):
         task_list = self.w.load_tasks()
-
+        pending_tasks = task_list['pending']
+        if len(pending_tasks) == 0:
+            return "No pending tasks."
         response = [f"**Current tasks**:"]
-        for task in task_list['pending']:
+        for task in pending_tasks:
             date = datetime.strptime(task['entry'], '%Y%m%dT%H%M%SZ')
             formatted_date = self._format_date(date)
             response.append(f"**{task['id']}** - **{formatted_date}** - {task['description']}")
