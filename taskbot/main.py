@@ -9,12 +9,10 @@ from aiohttp import ClientConnectionError, ServerDisconnectedError
 from nio import (
     AsyncClient,
     AsyncClientConfig,
-    LocalProtocolError,
     LoginError,
     MegolmEvent,
     RoomMessageText,
-    UnknownEvent,
-)
+    UnknownEvent, )
 
 from taskbot.callbacks import Callbacks
 from taskbot.config import Config
@@ -83,7 +81,7 @@ async def run_bot(args):
                 if type(login_response) == LoginError:
                     logger.error("Failed to login: %s", login_response.message)
                     return False
-            except LocalProtocolError as e:
+            except Exception as e:
                 # There's an edge case here where the user hasn't installed the correct C
                 # dependencies. In that case, a LocalProtocolError is raised on login.
                 logger.fatal(
@@ -98,7 +96,10 @@ async def run_bot(args):
 
         logger.info(f"Logged in as {config.user_id}")
 
-        await client.sync()
+        response = await client.sync()
+        if getattr(response, 'status_code', None) is not None and response.status_code == 'M_UNKNOWN_TOKEN':
+            logger.error("Invalid access token. Run the login command and set matrix.user_token again")
+            return False
 
         client.add_event_callback(callbacks.decryption_failure, (MegolmEvent,))
         client.add_event_callback(callbacks.unknown, (UnknownEvent,))
@@ -130,7 +131,7 @@ async def login(args):
         encryption_enabled=True,
     )
 
-    print(f'Logging in as user {config.user_id}')
+    logger.info(f'Logging in as user {config.user_id}')
     user_password = config.user_password
     if user_password is None:
         print('No password set in configuration file.')

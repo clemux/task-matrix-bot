@@ -6,7 +6,7 @@ from nio import (
     MatrixRoom,
     MegolmEvent,
     RoomMessageText,
-    UnknownEvent,
+    UnknownEvent, SyncResponse,
 )
 
 from taskbot.chat_functions import send_text_to_room
@@ -84,3 +84,6 @@ class Callbacks:
         logger.debug(
             f"Got unknown event with type to {event.type} from {event.sender} in {room.room_id}."
         )
+
+    async def sync_error(self, response):
+        logger.info(response)
