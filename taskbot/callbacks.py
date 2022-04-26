@@ -6,8 +6,7 @@ from nio import (
     MatrixRoom,
     MegolmEvent,
     RoomMessageText,
-    UnknownEvent, SyncResponse,
-)
+    UnknownEvent, )
 
 from taskbot.chat_functions import send_text_to_room
 from taskbot.commands import task_commands

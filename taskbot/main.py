@@ -12,7 +12,7 @@ from nio import (
     LoginError,
     MegolmEvent,
     RoomMessageText,
-    UnknownEvent, )
+    UnknownEvent, SyncError, )
 
 from taskbot.callbacks import Callbacks
 from taskbot.config import Config
@@ -22,12 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 async def run_bot(args):
-    """The first function that is run when starting the bot"""
-
-    # Read user-configured options from a config file.
-    # A different config file path can be specified as the first command line argument
     config_path = args.config_path
-    # Read the parsed config file and create a Config object
     try:
         config = Config(config_path)
     except ConfigError as e:
@@ -37,7 +32,6 @@ async def run_bot(args):
     if not config.user_token and not config.user_password:
         raise ConfigError("Must supply either user token or password.")
 
-    # Configuration options for the AsyncClient
     client_config = AsyncClientConfig(
         max_limit_exceeded=0,
         max_timeouts=0,
@@ -45,7 +39,6 @@ async def run_bot(args):
         encryption_enabled=True,
     )
 
-    # Initialize the matrix client
     client = AsyncClient(
         config.homeserver_url,
         config.user_id,
@@ -58,12 +51,10 @@ async def run_bot(args):
         client.access_token = config.user_token
         client.user_id = config.user_id
 
-    # Set up event callbacks
     callbacks = Callbacks(client, config)
 
     try:
         if config.user_token:
-            # Use token to log in
             client.load_store()
 
             # Sync encryption keys with the server
@@ -97,7 +88,7 @@ async def run_bot(args):
         logger.info(f"Logged in as {config.user_id}")
 
         response = await client.sync()
-        if getattr(response, 'status_code', None) is not None and response.status_code == 'M_UNKNOWN_TOKEN':
+        if isinstance(response, SyncError) and response.status_code == 'M_UNKNOWN_TOKEN':
             logger.error("Invalid access token. Run the login command and set matrix.user_token again")
             return False
 
